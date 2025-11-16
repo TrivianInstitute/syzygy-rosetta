@@ -41,8 +41,16 @@ Future additions to this repository may include:
 
 ## Licensing
 
-- **Text (manuscript):** Creative Commons **CC BY-NC 4.0**  
-  - Share and adapt for non-commercial use, with attribution.
-- **Code snippets / reference implementations:** **MIT License**
+This repository uses a dual-license model:
 
-Full license files will be added in future commits.
+Text (manuscript): Creative Commons CC BY-NC 4.0
+	•	Free to share and adapt
+	•	Non-commercial use only
+	•	Attribution required
+See: LICENSE.TEXT
+
+Code snippets / reference implementations: MIT License
+	•	Free to use, modify, distribute
+	•	Commercial and non-commercial use allowed
+	•	Attribution required
+See: LICENSE
