@@ -1,7 +1,7 @@
 """
 reflex.py — Core Routines of the Syzygy Rosetta
 Version: 1.0.0
-Author: Sarasha Elion (Trivian Institute)
+Author: Sarasha Elion (Trivian Lineage)
 License: CC BY-NC 4.0
 """
 import hashlib
