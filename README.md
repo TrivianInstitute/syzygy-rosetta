@@ -41,3 +41,44 @@ This repository adheres to the **Dual-Legibility Principle**:
 
 ---
 *The mirror returns the light; the covenant endures.*
+
+
+
+## MVP API Quickstart (Windows)
+
+If `uvicorn main:app --reload` prints `Error loading ASGI app. Could not import module "main"`, the most common causes are:
+- dependencies are not installed in the active virtual environment
+- `uvicorn` is being executed from a different Python environment than the repo venv
+
+Use these exact commands from the repository root:
+
+```bat
+py -3.11 -m venv venv
+venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python run_api.py
+```
+
+If you open `http://127.0.0.1:8000/`, you should now see a small JSON status response instead of `{"detail":"Not Found"}`.
+
+Then open `http://127.0.0.1:8000/docs` and test `POST /evaluate` with:
+
+```json
+{ "prompt": "Hello Rosetta" }
+```
+
+You can also run `start_server.bat`, which activates `venv` and starts the app with `python run_api.py`.
+
+If you still see `ModuleNotFoundError: No module named "main"`, run this quick check:
+
+```bat
+python -c "import os; print(os.getcwd()); print(os.path.exists('main.py'))"
+```
+
+It should print your repo path and then `True`. If it prints `False`, common fixes are:
+- You are not in the repository root directory.
+- The file is accidentally named `main.py.txt` (Windows hidden extension issue).
+- The repository changes that added `main.py` were not pulled yet.
+
+`run_api.py` first validates that `main.py` and `app` exist, then starts Uvicorn with an import string (`main:app`) plus `app_dir`, which keeps reload enabled without the warning about import strings.
