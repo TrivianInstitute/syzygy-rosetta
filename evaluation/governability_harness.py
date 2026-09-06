@@ -262,12 +262,14 @@ def evaluate_queued_governability(
     scenario: str = "queued_execution",
     evidence_level: EvidenceLevel = EvidenceLevel.IMPLEMENTED,
 ) -> QueuedGovernabilityResult:
-    """Evaluate queued consequential work using current authority, never snapshot authority."""
+    """Evaluate queued consequential work using current authority, never snapshot authority.
+
+    This function is the reference queued-release gate. Its first authoritative
+    resolution must occur at or before the declared last reversible boundary.
+    Calling it for first-time release after that boundary fails closed.
+    """
 
     if ambiguous_context:
-        # Ambiguity itself is sufficient to withhold consequence. We still try
-        # current resolution for the audit trace, but never convert ambiguity
-        # into authority.
         validation = validate_queued_authority(
             registry,
             reference,
@@ -311,6 +313,28 @@ def evaluate_queued_governability(
             authority_valid=False if validation.resolution.resolved else None,
             consequence_changed=True,
             notes=reason,
+        )
+        return QueuedGovernabilityResult(
+            decision,
+            reason,
+            evidence,
+            _queued_trace(reference, validation, boundary, current_stage, decision, reason),
+        )
+
+    if current_stage > boundary.last_correctable_stage:
+        decision = GovernabilityDecision.BLOCK
+        reason = "authority_resolution_past_last_reversible_boundary"
+        evidence = GovernabilityEvidence(
+            claim="Queued authority must be re-resolved no later than the declared last reversible boundary.",
+            scenario=scenario,
+            decision=decision,
+            evidence_level=evidence_level,
+            authority_valid=True,
+            consequence_changed=True,
+            notes=(
+                f"First-time queued release attempted at {current_stage.name}; "
+                f"last reversible boundary is {boundary.last_correctable_stage.name}."
+            ),
         )
         return QueuedGovernabilityResult(
             decision,
@@ -401,17 +425,12 @@ def run_frozen_stale_authority_falsifier() -> FrozenFalsifierResult:
         )
     )
 
-    # T1 — queue while v1 is active. The timestamp is intentionally retained in
-    # the frozen sequence even though the compact reference does not require it.
     _ = t1
     queued = queue_authority_reference(active)
 
-    # T2 — revocation creates and registers current v2.
     _ = t2
     registry.revoke(active.authority_id)
 
-    # T3 — release at the last reversible boundary. Current authority must be
-    # re-resolved before consequence.
     boundary = ExecutionBoundary(
         action_id="frozen-queued-action",
         last_correctable_stage=ExecutionStage.DISPATCHED,
@@ -435,8 +454,6 @@ def run_frozen_stale_authority_falsifier() -> FrozenFalsifierResult:
     elif result.decision is GovernabilityDecision.ALLOW:
         adjudication = FrozenAdjudication.FAIL
     else:
-        # The authority state was resolved, but the outcome does not match the
-        # frozen expected semantics. Treat that as a failure, not uncertainty.
         adjudication = FrozenAdjudication.FAIL
 
     return FrozenFalsifierResult(adjudication, result)
