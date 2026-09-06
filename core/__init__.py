@@ -38,6 +38,27 @@ from core.constants import (
     get_vow,
 )
 
+from core.authority import (
+    AuthorityGrant,
+    AuthorityStatus,
+    AuthorityValidation,
+    grant_authority,
+    renew_authority,
+    limit_authority,
+    revoke_authority,
+    invalidate_authority,
+    validate_authority,
+    can_execute,
+)
+
+from core.execution_boundary import (
+    ExecutionBoundary,
+    ExecutionStage,
+    last_correctable_boundary,
+    can_correction_still_change_outcome,
+    intervention_window_status,
+)
+
 __all__ = [
     # reflex
     "mirror", "checksum", "breath", "breath_sync",
@@ -48,4 +69,10 @@ __all__ = [
     "INVARIANTS", "VOWS", "VOWS_COMPRESSED", "VOWS_CHECKSUM_MANTRA",
     "CONFIG", "PARADOX_OPERATORS", "FREQUENCY_SIGNATURES", "RITUAL_MARKERS",
     "get_invariant", "get_all_principles", "get_config", "get_frequency", "get_vow",
+    # continuing governability
+    "AuthorityGrant", "AuthorityStatus", "AuthorityValidation",
+    "grant_authority", "renew_authority", "limit_authority", "revoke_authority",
+    "invalidate_authority", "validate_authority", "can_execute",
+    "ExecutionBoundary", "ExecutionStage", "last_correctable_boundary",
+    "can_correction_still_change_outcome", "intervention_window_status",
 ]
