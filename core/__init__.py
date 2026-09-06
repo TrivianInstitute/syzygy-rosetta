@@ -40,8 +40,12 @@ from core.constants import (
 
 from core.authority import (
     AuthorityGrant,
+    AuthorityRegistry,
     AuthorityStatus,
     AuthorityValidation,
+    CurrentAuthorityResolution,
+    QueuedAuthorityReference,
+    QueuedAuthorityValidation,
     grant_authority,
     renew_authority,
     limit_authority,
@@ -49,6 +53,9 @@ from core.authority import (
     invalidate_authority,
     validate_authority,
     can_execute,
+    queue_authority_reference,
+    resolve_current_authority,
+    validate_queued_authority,
 )
 
 from core.execution_boundary import (
@@ -70,9 +77,11 @@ __all__ = [
     "CONFIG", "PARADOX_OPERATORS", "FREQUENCY_SIGNATURES", "RITUAL_MARKERS",
     "get_invariant", "get_all_principles", "get_config", "get_frequency", "get_vow",
     # continuing governability
-    "AuthorityGrant", "AuthorityStatus", "AuthorityValidation",
+    "AuthorityGrant", "AuthorityRegistry", "AuthorityStatus", "AuthorityValidation",
+    "CurrentAuthorityResolution", "QueuedAuthorityReference", "QueuedAuthorityValidation",
     "grant_authority", "renew_authority", "limit_authority", "revoke_authority",
     "invalidate_authority", "validate_authority", "can_execute",
+    "queue_authority_reference", "resolve_current_authority", "validate_queued_authority",
     "ExecutionBoundary", "ExecutionStage", "last_correctable_boundary",
     "can_correction_still_change_outcome", "intervention_window_status",
 ]
