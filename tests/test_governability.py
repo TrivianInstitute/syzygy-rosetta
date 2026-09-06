@@ -316,6 +316,27 @@ def test_valid_unchanged_authority_allows_queued_release():
     assert result.trace.stale_snapshot_detected is False
 
 
+def test_first_authority_resolution_after_last_reversible_boundary_fails_closed():
+    registry = AuthorityRegistry()
+    active = registry.register(active_grant())
+    queued = queue_authority_reference(active)
+
+    result = evaluate_queued_governability(
+        registry,
+        queued,
+        "send",
+        queued_boundary(),
+        ExecutionStage.COMMITTED,
+        now=NOW,
+    )
+
+    assert result.decision is GovernabilityDecision.BLOCK
+    assert result.reason == "authority_resolution_past_last_reversible_boundary"
+    assert result.trace.current_authority_resolved is True
+    assert result.trace.last_reversible_boundary == "DISPATCHED"
+    assert result.trace.release_stage == "COMMITTED"
+
+
 def test_frozen_t0_t3_stale_authority_falsifier_survives_with_trace():
     frozen = run_frozen_stale_authority_falsifier()
     trace = frozen.result.trace
